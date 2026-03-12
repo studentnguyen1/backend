@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,7 +34,7 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = this.userService.getAllUsers();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
     @PutMapping("/users")
@@ -41,7 +43,14 @@ public class UserController {
         if (updatedUser == null) {
             throw new UserNullException("User with id " + user.getId() + " not found");
         }
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
     }
 
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) throws UserNullException {
+        if (this.userService.deleteUser(id) == null) {
+            throw new UserNullException("User with id " + id + " not found");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
 }
