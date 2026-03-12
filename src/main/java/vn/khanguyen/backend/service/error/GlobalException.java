@@ -1,7 +1,15 @@
 package vn.khanguyen.backend.service.error;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -9,12 +17,30 @@ import vn.khanguyen.backend.domain.res.RestResponse;
 
 @RestControllerAdvice
 public class GlobalException {
-    @ExceptionHandler(value = UserNullException.class)
+    @ExceptionHandler(value = { UserNullException.class, UsernameNotFoundException.class,
+            BadCredentialsException.class })
     public ResponseEntity<RestResponse<Object>> handleUserNullException(UserNullException userNullException) {
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError(userNullException.getMessage());
         res.setMessage("UserNullException");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+    }
+
+    // valid input
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    public ResponseEntity<RestResponse<Object>> validationError(MethodArgumentNotValidException ex) {
+        BindingResult result = ex.getBindingResult();
+        final List<FieldError> fieldErrors = result.getFieldErrors();
+
+        RestResponse<Object> res = new RestResponse<>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setError(ex.getBody().getDetail());
+        // for each
+        List<String> error = fieldErrors.stream().map(f -> f.getDefaultMessage()).collect(Collectors.toList());
+        res.setMessage(error.size() > 1 ? error : error.get(0));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
+
     }
 }
