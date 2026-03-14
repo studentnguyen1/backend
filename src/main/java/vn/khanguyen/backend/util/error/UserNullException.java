@@ -1,4 +1,4 @@
-package vn.khanguyen.backend.service.error;
+package vn.khanguyen.backend.util.error;
 
 public class UserNullException extends Exception {
     public UserNullException(String message) {

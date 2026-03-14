@@ -1,4 +1,4 @@
-package vn.khanguyen.backend.service.error;
+package vn.khanguyen.backend.util.error;
 
 import java.util.List;
 import java.util.stream.Collectors;

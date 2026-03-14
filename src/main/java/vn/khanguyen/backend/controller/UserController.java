@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import vn.khanguyen.backend.domain.User;
 import vn.khanguyen.backend.service.UserService;
-import vn.khanguyen.backend.service.error.UserNullException;
+import vn.khanguyen.backend.util.error.UserNullException;
 
 @RestController
 public class UserController {
