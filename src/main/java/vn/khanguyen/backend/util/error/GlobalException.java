@@ -19,11 +19,11 @@ import vn.khanguyen.backend.domain.res.RestResponse;
 public class GlobalException {
     @ExceptionHandler(value = { UserNullException.class, UsernameNotFoundException.class,
             BadCredentialsException.class })
-    public ResponseEntity<RestResponse<Object>> handleUserNullException(UserNullException userNullException) {
+    public ResponseEntity<RestResponse<Object>> handleUserNullException(Exception ex) {
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setError(userNullException.getMessage());
-        res.setMessage("UserNullException");
+        res.setError(ex.getMessage());
+        res.setMessage("Exception occur..");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 

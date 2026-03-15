@@ -1,6 +1,7 @@
 package vn.khanguyen.backend.config;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
@@ -15,6 +16,7 @@ import tools.jackson.databind.ObjectMapper;
 import vn.khanguyen.backend.domain.res.RestResponse;
 
 @Component
+// catch exception jwt
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     // khai bao 1 exception hanldle de giai quyet ex
     private final AuthenticationEntryPoint delegate = new BearerTokenAuthenticationEntryPoint();
@@ -34,7 +36,10 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.UNAUTHORIZED.value());
-        res.setError(authenticationException.getCause().getMessage());
+        String errorMessage = Optional.ofNullable(authenticationException.getCause())
+                .map(Throwable::getMessage)
+                .orElse(authenticationException.getMessage());
+        res.setError(errorMessage);
         res.setMessage("Token không hợp lệ ( hết hạn, không đúng định dạng,...)");
 
         mapper.writeValue(response.getWriter(), res);
