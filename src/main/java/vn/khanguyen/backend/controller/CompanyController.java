@@ -18,6 +18,7 @@ import jakarta.validation.Valid;
 import vn.khanguyen.backend.domain.Company;
 import vn.khanguyen.backend.domain.dto.ResultPaginationDTO;
 import vn.khanguyen.backend.service.CompanyService;
+import vn.khanguyen.backend.util.annotation.ApiMessage;
 import vn.khanguyen.backend.util.error.UserNullException;
 
 @RestController
@@ -29,6 +30,7 @@ public class CompanyController {
     }
 
     @PostMapping("/companies")
+    @ApiMessage("Create a company")
     public ResponseEntity<Company> createCompany(@RequestBody @Valid Company company) throws UserNullException {
         if (this.companyService.findById(company.getId()) != null) {
             throw new UserNullException("Company da ton tai");
@@ -37,6 +39,7 @@ public class CompanyController {
     }
 
     @PutMapping("/companies")
+    @ApiMessage("Update a company")
     public ResponseEntity<Company> updateCompany(@RequestBody @Valid Company company) throws UserNullException {
         if (this.companyService.findById(company.getId()) == null) {
             throw new UserNullException("Company khong ton tai");
@@ -45,22 +48,8 @@ public class CompanyController {
         return ResponseEntity.status(HttpStatus.OK).body(companyCurrent);
     }
 
-    @GetMapping("/companies")
-    public ResponseEntity<ResultPaginationDTO> getAllCompany(@Filter Specification<Company> spec, Pageable pageable) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(this.companyService.getAllCompany(spec, pageable));
-    }
-
-    @GetMapping("/companies/{id}")
-    public ResponseEntity<Company> getCompanyById(@PathVariable("id") long id) throws UserNullException {
-        Company company = this.companyService.findById(id);
-        if (company == null) {
-            throw new UserNullException("Company khong ton tai");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(company);
-    }
-
     @DeleteMapping("/companies/{id}")
+    @ApiMessage("Delete a company")
     public ResponseEntity<Void> deleteCompany(@PathVariable("id") long id) throws UserNullException {
         if (this.companyService.findById(id) == null) {
             throw new UserNullException("Company khong ton tai");
@@ -69,4 +58,21 @@ public class CompanyController {
         return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
+    @GetMapping("/companies")
+    @ApiMessage("Fetch all company")
+    public ResponseEntity<ResultPaginationDTO> getAllCompany(@Filter Specification<Company> spec, Pageable pageable) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(this.companyService.getAllCompany(spec, pageable));
+    }
+
+    @GetMapping("/companies/{id}")
+    @ApiMessage("Fetch company by id")
+    public ResponseEntity<Company> getCompanyById(@PathVariable("id") long id) throws UserNullException {
+        Company company = this.companyService.findById(id);
+        if (company == null) {
+            throw new UserNullException("Company khong ton tai");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(company);
+
+    }
 }

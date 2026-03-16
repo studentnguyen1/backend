@@ -1,7 +1,7 @@
 package vn.khanguyen.backend.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.turkraft.springfilter.boot.Filter;
+
 import vn.khanguyen.backend.domain.User;
+import vn.khanguyen.backend.domain.dto.ResultPaginationDTO;
 import vn.khanguyen.backend.service.UserService;
+import vn.khanguyen.backend.util.annotation.ApiMessage;
 import vn.khanguyen.backend.util.error.UserNullException;
 
 @RestController
@@ -25,19 +29,15 @@ public class UserController {
     }
 
     @PostMapping("/users")
+    @ApiMessage("Create a user")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User createUser = this.userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(createUser);
 
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = this.userService.getAllUsers();
-        return ResponseEntity.status(HttpStatus.OK).body(users);
-    }
-
     @PutMapping("/users")
+    @ApiMessage("Update a user")
     public ResponseEntity<User> updateUser(@RequestBody User user) throws UserNullException {
         User updatedUser = this.userService.updateUser(user);
         if (updatedUser == null) {
@@ -47,10 +47,27 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
+    @ApiMessage("Delete a user")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) throws UserNullException {
         if (this.userService.deleteUser(id) == null) {
             throw new UserNullException("User with id " + id + " not found");
         }
         return ResponseEntity.status(HttpStatus.OK).body(null);
+    }
+
+    @GetMapping("/users/{id}")
+    @ApiMessage("Fetch user by id")
+    public ResponseEntity<User> getUserById(@PathVariable("id") long id) throws UserNullException {
+        User user = this.userService.getUserById(id);
+        if (user == null) {
+            throw new UserNullException("User khong ton tai");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @GetMapping("/users")
+    @ApiMessage("Fetch all users")
+    public ResponseEntity<ResultPaginationDTO> getAllUsers(@Filter Specification<User> spec, Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(this.userService.getAllUsers(spec, pageable));
     }
 }
