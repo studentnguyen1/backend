@@ -2,6 +2,8 @@ package vn.khanguyen.backend.domain;
 
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +20,17 @@ import vn.khanguyen.backend.util.SecurityUtil;
 @Table(name = "companies")
 @Getter
 @Setter
-
+@JsonPropertyOrder({
+        "id",
+        "name",
+        "description",
+        "address",
+        "logo",
+        "createdAt",
+        "updatedAt",
+        "createdBy",
+        "updatedBy"
+})
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,11 +47,11 @@ public class Company {
 
     private Instant createdAt;
 
-    private Instant updateAt;
+    private Instant updatedAt;
 
     private String createdBy;
 
-    private String updateBy;
+    private String updatedBy;
 
     @PrePersist
     public void handleBeforeCreate() {
@@ -51,10 +63,10 @@ public class Company {
 
     @PreUpdate
     public void handleAfterUpdate() {
-        this.updateBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
-        this.updateAt = Instant.now();
+        this.updatedAt = Instant.now();
     }
 
 }
