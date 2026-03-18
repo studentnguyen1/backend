@@ -1,5 +1,3 @@
-// vn/khanguyen/backend/domain/User.java
-
 package vn.khanguyen.backend.domain;
 
 import java.time.Instant;
@@ -16,42 +14,34 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import vn.khanguyen.backend.util.SecurityUtil;
-import vn.khanguyen.backend.util.constant.GenderEnum;
 
 @Entity
-@Table(name = "users")
+@Table(name = "resumes")
 @Getter
 @Setter
 @JsonPropertyOrder({
         "id",
-        "name",
         "email",
-        "password",
-        "age",
-        "gender",
-        "address",
-        "refreshToken",
+        "url",
+        "status",
+        "createdAt",
+        "updatedAt",
         "createdBy",
         "updatedBy",
-        "createdAt",
-        "updatedAt"
+        "userId",
+        "jobId",
+        "companyId"
 })
-public class User {
+public class Resume {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String email;
 
-    private String password;
+    private String url;
 
-    private int age;
-
-    private GenderEnum gender;
-
-    private String address;
-
-    private String refreshToken;
+    private String status;
 
     private Instant createdAt;
 
@@ -60,6 +50,12 @@ public class User {
     private String createdBy;
 
     private String updatedBy;
+
+    private long userId;
+
+    private long jobId;
+
+    private long companyId;
 
     @PrePersist
     public void handleBeforeCreate() {

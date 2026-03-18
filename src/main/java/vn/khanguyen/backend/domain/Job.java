@@ -1,7 +1,7 @@
-// vn/khanguyen/backend/domain/User.java
 
 package vn.khanguyen.backend.domain;
 
+import java.sql.Date;
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -16,42 +16,49 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import vn.khanguyen.backend.util.SecurityUtil;
-import vn.khanguyen.backend.util.constant.GenderEnum;
 
 @Entity
-@Table(name = "users")
+@Table(name = "jobs")
 @Getter
 @Setter
 @JsonPropertyOrder({
         "id",
         "name",
-        "email",
-        "password",
-        "age",
-        "gender",
-        "address",
-        "refreshToken",
-        "createdBy",
-        "updatedBy",
+        "location",
+        "salary",
+        "quantity",
+        "level",
+        "description",
+        "startDate",
+        "endDate",
+        "isActive",
         "createdAt",
-        "updatedAt"
+        "updatedAt",
+        "createdBy",
+        "updatedBy"
 })
-public class User {
+public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String email;
+    private String name;
 
-    private String password;
+    private String location;
 
-    private int age;
+    private double salary;
 
-    private GenderEnum gender;
+    private int quantity;
 
-    private String address;
+    private String level;
 
-    private String refreshToken;
+    private String description;
+
+    private Date startDate;
+
+    private Date endDate;
+
+    private boolean isActive;
 
     private Instant createdAt;
 
@@ -76,6 +83,4 @@ public class User {
                 : "";
         this.updatedAt = Instant.now();
     }
-
-    // constructors, getters, and setters
 }

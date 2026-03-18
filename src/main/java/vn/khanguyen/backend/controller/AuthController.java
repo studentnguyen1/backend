@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import vn.khanguyen.backend.domain.dto.LoginDTO;
 import vn.khanguyen.backend.domain.dto.RestLoginDTO;
 import vn.khanguyen.backend.util.SecurityUtil;
+import vn.khanguyen.backend.util.annotation.ApiMessage;
 
 @RestController
 public class AuthController {
@@ -26,6 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @ApiMessage("Login to system")
     public ResponseEntity<RestLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         // Nạp input gồm username/password vào Security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(

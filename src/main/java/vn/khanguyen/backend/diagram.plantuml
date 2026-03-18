@@ -1,0 +1,110 @@
+@startuml
+
+class Company {
+    id : long
+    name : String
+    description : String
+    address : String
+    logo : String
+    createdAt : Date
+    updatedAt : Date
+    createdBy : String
+    updatedBy : String
+}
+
+class Job {
+    id : long
+    name : String
+    location : String
+    salary : double
+    quantity : int
+    level : String
+    description : String
+    startDate : Date
+    endDate : Date
+    isActive : boolean
+    createdAt : Date
+    updatedAt : Date
+    createdBy : String
+    updatedBy : String
+}
+
+class Permission {
+    id : long
+    name : String
+    apiPath : String
+    method : String
+    module : String
+    createdAt : Date
+    updatedAt : Date
+    createdBy : String
+    updatedBy : String
+}
+
+class Resume {
+    id : long
+    email : String
+    url : String
+    status : String
+    createdAt : Date
+    updatedAt : Date
+    createdBy : String
+    updatedBy : String
+    user_id : long
+    job_id : long
+    company_id : long
+}
+
+class Skill {
+    id : long
+    name : String
+    description : String
+}
+
+class Subscriber {
+    id : long
+    email : String
+    name : String
+    skills : Array<Skill>
+    createdAt : Date
+    updatedAt : Date
+    createdBy : String
+    updatedBy : String
+}
+
+class User {
+    id : long
+    name : String
+    email : String
+    password : String
+    age : int
+    gender : String
+    address : String
+    refreshToken : String
+    role_id : long
+    createdAt : Date
+    updatedAt : Date
+}
+
+class Role {
+    id : long
+    name : String
+    description : String
+    isActive : boolean
+    permission : Array<Permission>
+        createdAt : Date
+        updatedAt : Date
+}
+
+' Relationships
+User "n" -- "1" Role 
+User "n" -- "1" Company 
+User "1" -- "1" Subscriber
+User "1" -- "*" Resume
+Company "1" -- "*" Resume 
+Company "1" -- "*" Job 
+Job "*" -- "*" Skill 
+Role "*" -- "*" Permission
+Subscriber "*" -- "*" Skill 
+
+@enduml

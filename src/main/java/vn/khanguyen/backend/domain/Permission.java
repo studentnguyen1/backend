@@ -1,5 +1,4 @@
-// vn/khanguyen/backend/domain/User.java
-
+// src/main/java/vn/khanguyen/backend/domain/Permission.java
 package vn.khanguyen.backend.domain;
 
 import java.time.Instant;
@@ -16,42 +15,34 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import vn.khanguyen.backend.util.SecurityUtil;
-import vn.khanguyen.backend.util.constant.GenderEnum;
 
 @Entity
-@Table(name = "users")
+@Table(name = "permissions")
 @Getter
 @Setter
 @JsonPropertyOrder({
         "id",
         "name",
-        "email",
-        "password",
-        "age",
-        "gender",
-        "address",
-        "refreshToken",
-        "createdBy",
-        "updatedBy",
+        "apiPath",
+        "method",
+        "module",
         "createdAt",
-        "updatedAt"
+        "updatedAt",
+        "createdBy",
+        "updatedBy"
 })
-public class User {
+public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String email;
+    private String name;
 
-    private String password;
+    private String apiPath;
 
-    private int age;
+    private String method;
 
-    private GenderEnum gender;
-
-    private String address;
-
-    private String refreshToken;
+    private String module;
 
     private Instant createdAt;
 
@@ -76,6 +67,4 @@ public class User {
                 : "";
         this.updatedAt = Instant.now();
     }
-
-    // constructors, getters, and setters
 }
