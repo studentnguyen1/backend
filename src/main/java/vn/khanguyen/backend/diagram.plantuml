@@ -102,7 +102,6 @@ User "n" -- "1" Role
 User "n" -- "1" Company 
 User "1" -- "1" Subscriber
 User "1" -- "*" Resume
-Company "1" -- "*" Resume 
 Company "1" -- "*" Job 
 Job "*" -- "*" Skill 
 Role "*" -- "*" Permission
