@@ -1,100 +1,101 @@
 @startuml
-
+' doneee
 class Company {
     id : long
     name : String
     description : String
     address : String
     logo : String
-    createdAt : Date
-    updatedAt : Date
-    createdBy : String
-    updatedBy : String
+    createdAt : Instant
+    updatedAt : Instant
+    createdBy: String
+    updatedBy: String
 }
-
+' doneee
 class Job {
     id : long
     name : String
     location : String
     salary : double
     quantity : int
-    level : String
+    level : Enums
     description : String
-    startDate : Date
-    endDate : Date
+    startDate : Instant
+    endDate : Instant
     isActive : boolean
-    createdAt : Date
-    updatedAt : Date
-    createdBy : String
-    updatedBy : String
+    createdAt : Instant
+    updatedAt : Instant
+    createdBy: String
+    updatedBy: String
 }
-
+' doneee
 class Permission {
     id : long
     name : String
     apiPath : String
     method : String
     module : String
-    createdAt : Date
-    updatedAt : Date
+    createdAt : Instant
+    updatedAt : Instant
     createdBy : String
     updatedBy : String
 }
-
+' doneee
 class Resume {
     id : long
     email : String
     url : String
-    status : String
+    status : Enums
     createdAt : Date
     updatedAt : Date
     createdBy : String
     updatedBy : String
-    user_id : long
-    job_id : long
-    company_id : long
 }
-
+' doneee
 class Skill {
     id : long
     name : String
-    description : String
+    createdAt : Instant
+    updatedAt : Instant
+    createdBy: String
+    updatedBy: String
 }
-
+' doneee
 class Subscriber {
     id : long
     email : String
     name : String
-    skills : Array<Skill>
-    createdAt : Date
-    updatedAt : Date
-    createdBy : String
-    updatedBy : String
+    createdAt : Instant
+    updatedAt : Instant
+    createdBy: String
+    updatedBy: String
 }
-
+' done
 class User {
     id : long
     name : String
     email : String
     password : String
     age : int
-    gender : String
+    gender : Enums
     address : String
     refreshToken : String
-    role_id : long
-    createdAt : Date
-    updatedAt : Date
+    createdAt : Instant
+    updatedAt : Instant
+    createdBy: String
+    updatedBy: String
 }
-
+' donee
 class Role {
     id : long
     name : String
     description : String
     isActive : boolean
-    permission : Array<Permission>
-        createdAt : Date
-        updatedAt : Date
-}
+    createdAt : Instant
+    updatedAt : Instant
+    createdBy: String
+    updatedBy: String
+    }
 
 ' Relationships
 User "n" -- "1" Role 

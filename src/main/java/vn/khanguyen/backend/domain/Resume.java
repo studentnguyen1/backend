@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import vn.khanguyen.backend.util.SecurityUtil;
+import vn.khanguyen.backend.util.constant.ResumeStateEnum;
 
 @Entity
 @Table(name = "resumes")
@@ -28,9 +29,6 @@ import vn.khanguyen.backend.util.SecurityUtil;
         "updatedAt",
         "createdBy",
         "updatedBy",
-        "userId",
-        "jobId",
-        "companyId"
 })
 public class Resume {
     @Id
@@ -41,7 +39,7 @@ public class Resume {
 
     private String url;
 
-    private String status;
+    private ResumeStateEnum status;
 
     private Instant createdAt;
 
@@ -50,12 +48,6 @@ public class Resume {
     private String createdBy;
 
     private String updatedBy;
-
-    private long userId;
-
-    private long jobId;
-
-    private long companyId;
 
     @PrePersist
     public void handleBeforeCreate() {

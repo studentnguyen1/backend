@@ -1,11 +1,9 @@
-
 package vn.khanguyen.backend.domain;
 
 import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,61 +11,30 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import vn.khanguyen.backend.util.SecurityUtil;
-import vn.khanguyen.backend.util.constant.LevelEnum;
 
 @Entity
-@Table(name = "jobs")
+@Table(name = "skills")
 @Getter
 @Setter
 @JsonPropertyOrder({
-        "id",
-        "name",
-        "location",
-        "salary",
-        "quantity",
-        "level",
-        "description",
-        "startDate",
-        "endDate",
-        "isActive",
-        "createdAt",
-        "updatedAt",
-        "createdBy",
-        "updatedBy"
+        "id", "name", "createdAt", "updatedAt", "createdBy", "updatedBy"
 })
-public class Job {
+public class Skill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NotBlank(message = "Tên skill không được để trống")
     private String name;
-
-    private String location;
-
-    private double salary;
-
-    private int quantity;
-
-    private LevelEnum level;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String description;
-
-    private Instant startDate;
-
-    private Instant endDate;
-
-    private boolean isActive;
 
     private Instant createdAt;
 
     private Instant updatedAt;
-
     private String createdBy;
-
     private String updatedBy;
 
     @PrePersist

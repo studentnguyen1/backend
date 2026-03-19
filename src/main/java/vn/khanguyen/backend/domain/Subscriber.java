@@ -25,10 +25,11 @@ import vn.khanguyen.backend.util.SecurityUtil;
         "id",
         "email",
         "name",
+        "createdAt",
+        "updatedAt",
         "createdBy",
         "updatedBy",
-        "createdAt",
-        "updatedAt"
+
 })
 public class Subscriber {
     @Id
@@ -39,13 +40,13 @@ public class Subscriber {
 
     private String name;
 
-    private String createdBy;
-
-    private String updatedBy;
-
     private Instant createdAt;
 
     private Instant updatedAt;
+
+    private String createdBy;
+
+    private String updatedBy;
 
     @PrePersist
     public void handleBeforeCreate() {

@@ -34,10 +34,10 @@ import vn.khanguyen.backend.util.constant.GenderEnum;
         "gender",
         "address",
         "refreshToken",
+        "createdAt",
+        "updatedAt",
         "createdBy",
         "updatedBy",
-        "createdAt",
-        "updatedAt"
 })
 public class User {
     @Id
