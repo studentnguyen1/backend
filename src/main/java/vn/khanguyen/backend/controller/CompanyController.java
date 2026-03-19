@@ -19,7 +19,7 @@ import vn.khanguyen.backend.domain.Company;
 import vn.khanguyen.backend.domain.dto.ResultPaginationDTO;
 import vn.khanguyen.backend.service.CompanyService;
 import vn.khanguyen.backend.util.annotation.ApiMessage;
-import vn.khanguyen.backend.util.error.UserNullException;
+import vn.khanguyen.backend.util.error.ResourceNotFoundException;
 
 @RestController
 public class CompanyController {
@@ -31,18 +31,18 @@ public class CompanyController {
 
     @PostMapping("/companies")
     @ApiMessage("Create a company")
-    public ResponseEntity<Company> createCompany(@RequestBody @Valid Company company) throws UserNullException {
+    public ResponseEntity<Company> createCompany(@RequestBody @Valid Company company) throws ResourceNotFoundException {
         if (this.companyService.findById(company.getId()) != null) {
-            throw new UserNullException("Company da ton tai");
+            throw new ResourceNotFoundException("Company da ton tai");
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(this.companyService.createCompany(company));
     }
 
     @PutMapping("/companies")
     @ApiMessage("Update a company")
-    public ResponseEntity<Company> updateCompany(@RequestBody @Valid Company company) throws UserNullException {
+    public ResponseEntity<Company> updateCompany(@RequestBody @Valid Company company) throws ResourceNotFoundException {
         if (this.companyService.findById(company.getId()) == null) {
-            throw new UserNullException("Company khong ton tai");
+            throw new ResourceNotFoundException("Company khong ton tai");
         }
         Company companyCurrent = this.companyService.updateCompany(company);
         return ResponseEntity.status(HttpStatus.OK).body(companyCurrent);
@@ -50,9 +50,9 @@ public class CompanyController {
 
     @DeleteMapping("/companies/{id}")
     @ApiMessage("Delete a company")
-    public ResponseEntity<Void> deleteCompany(@PathVariable("id") long id) throws UserNullException {
+    public ResponseEntity<Void> deleteCompany(@PathVariable("id") long id) throws ResourceNotFoundException {
         if (this.companyService.findById(id) == null) {
-            throw new UserNullException("Company khong ton tai");
+            throw new ResourceNotFoundException("Company khong ton tai");
         }
         this.companyService.deleteCompany(id);
         return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -67,10 +67,10 @@ public class CompanyController {
 
     @GetMapping("/companies/{id}")
     @ApiMessage("Fetch company by id")
-    public ResponseEntity<Company> getCompanyById(@PathVariable("id") long id) throws UserNullException {
+    public ResponseEntity<Company> getCompanyById(@PathVariable("id") long id) throws ResourceNotFoundException {
         Company company = this.companyService.findById(id);
         if (company == null) {
-            throw new UserNullException("Company khong ton tai");
+            throw new ResourceNotFoundException("Company khong ton tai");
         }
         return ResponseEntity.status(HttpStatus.OK).body(company);
 

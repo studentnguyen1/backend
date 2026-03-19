@@ -17,9 +17,9 @@ import vn.khanguyen.backend.domain.res.RestResponse;
 
 @RestControllerAdvice
 public class GlobalException {
-    @ExceptionHandler(value = { UserNullException.class, UsernameNotFoundException.class,
+    @ExceptionHandler(value = { ResourceNotFoundException.class, UsernameNotFoundException.class,
             BadCredentialsException.class })
-    public ResponseEntity<RestResponse<Object>> handleUserNullException(Exception ex) {
+    public ResponseEntity<RestResponse<Object>> handleResourceNotFoundException(Exception ex) {
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError(ex.getMessage());

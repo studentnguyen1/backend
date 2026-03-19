@@ -1,5 +1,7 @@
 package vn.khanguyen.backend.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -67,5 +69,13 @@ public class UserService {
 
     public User getUserById(long id) {
         return this.userRepository.findById(id).orElse(null);
+    }
+
+    public boolean isEmailExist(String email) {
+        return this.userRepository.findByEmail(email) != null;
+    }
+
+    public User getUserByUsername(String username) {
+        return this.userRepository.findByEmail(username);
     }
 }
