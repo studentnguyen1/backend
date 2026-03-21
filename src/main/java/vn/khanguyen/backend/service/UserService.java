@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import vn.khanguyen.backend.domain.User;
 import vn.khanguyen.backend.domain.dto.Meta;
 import vn.khanguyen.backend.domain.dto.ResultPaginationDTO;
+import vn.khanguyen.backend.domain.res.ResCreateUserDTO;
 import vn.khanguyen.backend.repository.UserRepository;
 
 @Service
@@ -77,5 +78,20 @@ public class UserService {
 
     public User getUserByUsername(String username) {
         return this.userRepository.findByEmail(username);
+    }
+
+    public ResCreateUserDTO convertToCreateUser(User user) {
+        ResCreateUserDTO res = new ResCreateUserDTO();
+        res.setId(user.getId());
+        res.setName(user.getName());
+        res.setEmail(user.getEmail());
+        res.setAge(user.getAge());
+        res.setGender(user.getGender());
+        res.setAddress(user.getAddress());
+        res.setCreatedAt(user.getCreatedAt());
+        res.setUpdateAt(user.getUpdatedAt());
+        res.setCreatedBy(user.getCreatedBy());
+        res.setUpdateBy(user.getUpdatedBy());
+        return res;
     }
 }

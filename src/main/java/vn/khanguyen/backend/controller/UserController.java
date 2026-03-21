@@ -16,6 +16,7 @@ import com.turkraft.springfilter.boot.Filter;
 
 import vn.khanguyen.backend.domain.User;
 import vn.khanguyen.backend.domain.dto.ResultPaginationDTO;
+import vn.khanguyen.backend.domain.res.ResCreateUserDTO;
 import vn.khanguyen.backend.service.UserService;
 import vn.khanguyen.backend.util.annotation.ApiMessage;
 import vn.khanguyen.backend.util.error.ResourceNotFoundException;
@@ -30,7 +31,7 @@ public class UserController {
 
     @PostMapping("/users")
     @ApiMessage("Create a user")
-    public ResponseEntity<User> createUser(@RequestBody User user) throws ResourceNotFoundException {
+    public ResponseEntity<ResCreateUserDTO> createUser(@RequestBody User user) throws ResourceNotFoundException {
         boolean isEmailExist = this.userService.isEmailExist(user.getEmail());
         if (isEmailExist) {
             throw new ResourceNotFoundException(
@@ -38,7 +39,7 @@ public class UserController {
         }
 
         User createUser = this.userService.createUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.convertToCreateUser(createUser));
 
     }
 

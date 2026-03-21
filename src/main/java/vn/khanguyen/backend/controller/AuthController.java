@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import vn.khanguyen.backend.domain.User;
 import vn.khanguyen.backend.domain.dto.LoginDTO;
 import vn.khanguyen.backend.domain.dto.RestLoginDTO;
+import vn.khanguyen.backend.service.UserService;
 import vn.khanguyen.backend.util.SecurityUtil;
 import vn.khanguyen.backend.util.annotation.ApiMessage;
 
@@ -20,10 +22,13 @@ import vn.khanguyen.backend.util.annotation.ApiMessage;
 public class AuthController {
     private final SecurityUtil securityUtil;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final UserService userService;
 
-    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil) {
+    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil,
+            UserService userService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -40,10 +45,17 @@ public class AuthController {
         String access_token = this.securityUtil.createToken(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        RestLoginDTO restLoginDTO = new RestLoginDTO();
-        restLoginDTO.setAccessToken(access_token);
+        // lay thong tin user
+        RestLoginDTO res = new RestLoginDTO();
+        User currentUser = this.userService.getUserByUsername(loginDTO.getUsername());
+        if (currentUser != null) {
+            RestLoginDTO.UserLogin userLogin = new RestLoginDTO.UserLogin(currentUser.getId(), currentUser.getEmail(),
+                    currentUser.getName());
+            res.setAccessToken(access_token);
+            res.setUser(userLogin);
+        }
 
-        return ResponseEntity.status(HttpStatus.OK).body(restLoginDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(res);
 
     }
 
