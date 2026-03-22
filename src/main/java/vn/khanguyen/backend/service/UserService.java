@@ -88,6 +88,10 @@ public class UserService {
         }
     }
 
+    public User getUserByRefreshTokenAndEmail(String refreshToken, String email) {
+        return this.userRepository.findByRefreshTokenAndEmail(refreshToken, email);
+    }
+
     public ResCreateUserDTO convertToCreateUser(User user) {
         ResCreateUserDTO res = new ResCreateUserDTO();
         res.setId(user.getId());
@@ -102,4 +106,14 @@ public class UserService {
         res.setUpdateBy(user.getUpdatedBy());
         return res;
     }
+
+    // public RestLoginDTO convertToRestLogin(User user, String accessToken) {
+    //     RestLoginDTO res = new RestLoginDTO();
+    //     RestLoginDTO.UserLogin userLogin = new RestLoginDTO.UserLogin(user.getId(),
+    //             user.getEmail(),
+    //             user.getName());
+    //     res.setUser(userLogin);
+    //     res.setAccessToken(accessToken);
+    //     return res;
+    // }
 }

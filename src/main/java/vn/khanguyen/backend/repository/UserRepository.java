@@ -10,4 +10,5 @@ import vn.khanguyen.backend.domain.User;
 public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
     User findByEmail(String email);
 
+    User findByRefreshTokenAndEmail(String refreshToken, String email);
 }

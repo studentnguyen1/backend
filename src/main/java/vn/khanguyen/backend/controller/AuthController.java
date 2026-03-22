@@ -9,6 +9,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +23,7 @@ import vn.khanguyen.backend.domain.dto.RestLoginDTO;
 import vn.khanguyen.backend.service.UserService;
 import vn.khanguyen.backend.util.SecurityUtil;
 import vn.khanguyen.backend.util.annotation.ApiMessage;
+import vn.khanguyen.backend.util.error.ResourceNotFoundException;
 
 @RestController
 public class AuthController {
@@ -37,7 +41,7 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     @ApiMessage("Login to system")
     public ResponseEntity<RestLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         // Nạp input gồm username/password vào Security
@@ -47,8 +51,6 @@ public class AuthController {
         // xác thực người dùng => cần viết hàm loadUserByUsername // xac thuc password
         // va truyen username, passw
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        // tao token
-        String access_token = this.securityUtil.createAccessToken(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // lay thong tin user
@@ -58,11 +60,14 @@ public class AuthController {
             RestLoginDTO.UserLogin userLogin = new RestLoginDTO.UserLogin(currentUser.getId(), currentUser.getEmail(),
                     currentUser.getName());
             res.setUser(userLogin);
-            res.setAccessToken(access_token);
         }
-        this.userService.updateUserToken(access_token, loginDTO.getUsername());
+        String access_token = this.securityUtil.createAccessToken(authentication.getName(), res.getUser());
+        res.setAccessToken(access_token);
 
-        String refresh_token = this.securityUtil.createRefreshToken(access_token, res);
+        // tao refresh token
+        String refresh_token = this.securityUtil.createRefreshToken(loginDTO.getUsername(), res);
+        this.userService.updateUserToken(refresh_token, loginDTO.getUsername());
+        System.out.println(">>>> token:   " + refresh_token);
         ResponseCookie resCookies = ResponseCookie.from("refresh_token", refresh_token)
                 .httpOnly(true)
                 .secure(true)
@@ -71,6 +76,66 @@ public class AuthController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.SET_COOKIE, resCookies.toString()).body(res);
+
+    }
+
+    @GetMapping("/auth/account")
+    @ApiMessage("Decode token and get account info")
+    public ResponseEntity<RestLoginDTO.UserLogin> getAccount() {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() ? SecurityUtil.getCurrentUserLogin().get() : "";
+
+        RestLoginDTO.UserLogin userLogin = new RestLoginDTO.UserLogin();
+
+        User currentUser = this.userService.getUserByUsername(email);
+        if (currentUser != null) {
+            userLogin.setId(currentUser.getId());
+            userLogin.setEmail(currentUser.getEmail());
+            userLogin.setUsername(currentUser.getName());
+        }
+        return ResponseEntity.ok().body(userLogin);
+
+    }
+
+    @GetMapping("/auth/refresh")
+    @ApiMessage("Get user By refresh token")
+    public ResponseEntity<RestLoginDTO> getFreshToken(
+            @CookieValue(name = "refresh_token") String refresh_token) throws ResourceNotFoundException {
+        // check valid token
+        Jwt decodedToken = this.securityUtil.checkValidRefreshToken(refresh_token);
+        String email = decodedToken.getSubject();
+
+        // check user by token + email
+        User currentUser = this.userService.getUserByRefreshTokenAndEmail(refresh_token, email);
+        if (currentUser == null) {
+            throw new ResourceNotFoundException("Refresh Token không hợp lệ");
+        }
+
+        // tao token moi
+        RestLoginDTO res = new RestLoginDTO();
+        RestLoginDTO.UserLogin userLogin = new RestLoginDTO.UserLogin(currentUser.getId(),
+                currentUser.getEmail(),
+                currentUser.getName());
+        res.setUser(userLogin);
+
+        // create access token
+        String access_token = this.securityUtil.createAccessToken(email, res.getUser());
+        res.setAccessToken(access_token);
+
+        // create new refresh token
+        String new_refresh_token = this.securityUtil.createRefreshToken(email, res);
+
+        // update user
+        this.userService.updateUserToken(new_refresh_token, email);
+
+        // update cookie (luu vao cookie)
+        ResponseCookie resCookies = ResponseCookie.from("refresh_token", new_refresh_token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(refreshTokenExpiration)
+                .build();
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, resCookies.toString()).body(res);
 
     }
 
