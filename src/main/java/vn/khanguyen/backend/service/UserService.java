@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import vn.khanguyen.backend.domain.Company;
 import vn.khanguyen.backend.domain.User;
 import vn.khanguyen.backend.domain.dto.Meta;
 import vn.khanguyen.backend.domain.dto.ResultPaginationDTO;
@@ -20,14 +21,21 @@ import vn.khanguyen.backend.repository.UserRepository;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CompanyService companyService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, CompanyService companyService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.companyService = companyService;
     }
 
     public User createUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        // check company
+        if (user.getCompany() != null) {
+            Company companyOpt = this.companyService.findById(user.getCompany().getId());
+            user.setCompany(companyOpt);
+        }
         return userRepository.save(user);
     }
 
@@ -46,7 +54,8 @@ public class UserService {
         mt.setTotal(pageUser.getTotalElements());
 
         rs.setMeta(mt);
-        rs.setResult(pageUser.getContent());
+        List<ResUserDTO> listUsers = pageUser.getContent().stream().map(this::convertToUser).toList();
+        rs.setResult(listUsers);
 
         return rs;
     }
@@ -58,6 +67,12 @@ public class UserService {
             user.setGender(userCur.getGender());
             user.setAge(userCur.getAge());
             user.setName(userCur.getName());
+
+            // check company
+            if (userCur.getCompany() != null) {
+                Company company = this.companyService.findById(userCur.getCompany().getId());
+                user.setCompany(company);
+            }
             return userRepository.save(user);
         }
         return user;
@@ -98,6 +113,8 @@ public class UserService {
 
     public ResCreateUserDTO convertToCreateUser(User user) {
         ResCreateUserDTO res = new ResCreateUserDTO();
+        ResCreateUserDTO.CompanyUser com = new ResCreateUserDTO.CompanyUser();
+
         res.setId(user.getId());
         res.setName(user.getName());
         res.setEmail(user.getEmail());
@@ -108,11 +125,19 @@ public class UserService {
         res.setUpdateAt(user.getUpdatedAt());
         res.setCreatedBy(user.getCreatedBy());
         res.setUpdateBy(user.getUpdatedBy());
+        // set company
+        if (user.getCompany() != null) {
+            com.setId(user.getCompany().getId());
+            com.setName(user.getCompany().getName());
+        }
+        res.setCompany(com);
         return res;
     }
 
     public ResUpdateUserDTO convertToUpdateUser(User user) {
         ResUpdateUserDTO res = new ResUpdateUserDTO();
+        ResUpdateUserDTO.CompanyUser com = new ResUpdateUserDTO.CompanyUser();
+
         res.setId(user.getId());
         res.setName(user.getName());
         res.setAge(user.getAge());
@@ -120,11 +145,20 @@ public class UserService {
         res.setAddress(user.getAddress());
         res.setUpdatedAt(user.getUpdatedAt());
         res.setUpdatedBy(user.getUpdatedBy());
+
+        // set company
+        if (user.getCompany() != null) {
+            com.setId(user.getCompany().getId());
+            com.setName(user.getCompany().getName());
+        }
+        res.setCompany(com);
         return res;
     }
 
     public ResUserDTO convertToUser(User user) {
         ResUserDTO res = new ResUserDTO();
+        ResUserDTO.CompanyUser com = new ResUserDTO.CompanyUser();
+
         res.setId(user.getId());
         res.setName(user.getName());
         res.setEmail(user.getEmail());
@@ -133,6 +167,13 @@ public class UserService {
         res.setAddress(user.getAddress());
         res.setCreatedAt(user.getCreatedAt());
         res.setUpdatedAt(user.getUpdatedAt());
+
+        // set company
+        if (user.getCompany() != null) {
+            com.setId(user.getCompany().getId());
+            com.setName(user.getCompany().getName());
+        }
+        res.setCompany(com);
         return res;
     }
 
