@@ -16,7 +16,9 @@ import com.turkraft.springfilter.boot.Filter;
 
 import vn.khanguyen.backend.domain.User;
 import vn.khanguyen.backend.domain.dto.ResultPaginationDTO;
-import vn.khanguyen.backend.domain.res.ResCreateUserDTO;
+import vn.khanguyen.backend.domain.res.user.ResCreateUserDTO;
+import vn.khanguyen.backend.domain.res.user.ResUpdateUserDTO;
+import vn.khanguyen.backend.domain.res.user.ResUserDTO;
 import vn.khanguyen.backend.service.UserService;
 import vn.khanguyen.backend.util.annotation.ApiMessage;
 import vn.khanguyen.backend.util.error.ResourceNotFoundException;
@@ -27,6 +29,7 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+
     }
 
     @PostMapping("/users")
@@ -37,7 +40,6 @@ public class UserController {
             throw new ResourceNotFoundException(
                     "Email" + user.getEmail() + "đã tồn tại, vui lòng sử dụng email khác");
         }
-
         User createUser = this.userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.convertToCreateUser(createUser));
 
@@ -45,17 +47,17 @@ public class UserController {
 
     @PutMapping("/users")
     @ApiMessage("Update a user")
-    public ResponseEntity<User> updateUser(@RequestBody User user) throws ResourceNotFoundException {
+    public ResponseEntity<ResUpdateUserDTO> updateUser(@RequestBody User user) throws ResourceNotFoundException {
         User updatedUser = this.userService.updateUser(user);
         if (updatedUser == null) {
             throw new ResourceNotFoundException("User with id " + user.getId() + " not found");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
+        return ResponseEntity.status(HttpStatus.OK).body(this.userService.convertToUpdateUser(updatedUser));
     }
 
     @DeleteMapping("/users/{id}")
     @ApiMessage("Delete a user")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) throws ResourceNotFoundException {
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") long id) throws ResourceNotFoundException {
         if (this.userService.deleteUser(id) == null) {
             throw new ResourceNotFoundException("User with id " + id + " not found");
         }
@@ -64,12 +66,12 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     @ApiMessage("Fetch user by id")
-    public ResponseEntity<User> getUserById(@PathVariable("id") long id) throws ResourceNotFoundException {
+    public ResponseEntity<ResUserDTO> getUserById(@PathVariable("id") long id) throws ResourceNotFoundException {
         User user = this.userService.getUserById(id);
         if (user == null) {
             throw new ResourceNotFoundException("User khong ton tai");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+        return ResponseEntity.status(HttpStatus.OK).body(this.userService.convertToUser(user));
     }
 
     @GetMapping("/users")

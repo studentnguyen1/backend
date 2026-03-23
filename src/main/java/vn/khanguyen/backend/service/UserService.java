@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import vn.khanguyen.backend.domain.User;
 import vn.khanguyen.backend.domain.dto.Meta;
 import vn.khanguyen.backend.domain.dto.ResultPaginationDTO;
-import vn.khanguyen.backend.domain.res.ResCreateUserDTO;
+import vn.khanguyen.backend.domain.res.user.ResCreateUserDTO;
+import vn.khanguyen.backend.domain.res.user.ResUpdateUserDTO;
+import vn.khanguyen.backend.domain.res.user.ResUserDTO;
 import vn.khanguyen.backend.repository.UserRepository;
 
 @Service
@@ -52,11 +54,13 @@ public class UserService {
     public User updateUser(User userCur) {
         User user = userRepository.findById(userCur.getId()).orElse(null);
         if (user != null) {
+            user.setAddress(userCur.getAddress());
+            user.setGender(userCur.getGender());
+            user.setAge(userCur.getAge());
             user.setName(userCur.getName());
-            user.setEmail(userCur.getEmail());
             return userRepository.save(user);
         }
-        return null;
+        return user;
     }
 
     public User deleteUser(Long id) {
@@ -81,10 +85,10 @@ public class UserService {
     }
 
     public void updateUserToken(String token, String email) {
-        User currentUser = this.getUserByUsername(email);
-        if (currentUser != null) {
-            currentUser.setRefreshToken(token);
-            this.userRepository.save(currentUser);
+        User user = this.getUserByUsername(email);
+        if (user != null) {
+            user.setRefreshToken(token);
+            this.userRepository.save(user);
         }
     }
 
@@ -107,13 +111,38 @@ public class UserService {
         return res;
     }
 
+    public ResUpdateUserDTO convertToUpdateUser(User user) {
+        ResUpdateUserDTO res = new ResUpdateUserDTO();
+        res.setId(user.getId());
+        res.setName(user.getName());
+        res.setAge(user.getAge());
+        res.setGender(user.getGender());
+        res.setAddress(user.getAddress());
+        res.setUpdatedAt(user.getUpdatedAt());
+        res.setUpdatedBy(user.getUpdatedBy());
+        return res;
+    }
+
+    public ResUserDTO convertToUser(User user) {
+        ResUserDTO res = new ResUserDTO();
+        res.setId(user.getId());
+        res.setName(user.getName());
+        res.setEmail(user.getEmail());
+        res.setAge(user.getAge());
+        res.setGender(user.getGender());
+        res.setAddress(user.getAddress());
+        res.setCreatedAt(user.getCreatedAt());
+        res.setUpdatedAt(user.getUpdatedAt());
+        return res;
+    }
+
     // public RestLoginDTO convertToRestLogin(User user, String accessToken) {
-    //     RestLoginDTO res = new RestLoginDTO();
-    //     RestLoginDTO.UserLogin userLogin = new RestLoginDTO.UserLogin(user.getId(),
-    //             user.getEmail(),
-    //             user.getName());
-    //     res.setUser(userLogin);
-    //     res.setAccessToken(accessToken);
-    //     return res;
+    // RestLoginDTO res = new RestLoginDTO();
+    // RestLoginDTO.UserLogin userLogin = new RestLoginDTO.UserLogin(user.getId(),
+    // user.getEmail(),
+    // user.getName());
+    // res.setUser(userLogin);
+    // res.setAccessToken(accessToken);
+    // return res;
     // }
 }
