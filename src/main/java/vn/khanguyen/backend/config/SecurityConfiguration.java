@@ -19,6 +19,7 @@ public class SecurityConfiguration {
                                 .authorizeHttpRequests(
                                                 authz -> authz
                                                                 .requestMatchers("/", "/auth/login", "/v3/api-docs/**",
+                                                                                "/storage/**",
                                                                                 "/auth/refresh",
                                                                                 "/swagger-ui/**",
                                                                                 "/swagger-ui.html")
